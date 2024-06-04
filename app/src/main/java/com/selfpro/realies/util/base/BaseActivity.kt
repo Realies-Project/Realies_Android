@@ -2,6 +2,7 @@ package com.selfpro.realies.util.base
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.IdRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
@@ -12,18 +13,20 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import com.selfpro.realies.R
+import com.selfpro.realies.util.SpLog
+import kotlin.properties.Delegates
 
 abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
     @LayoutRes private val layoutRes: Int,
 
-) : AppCompatActivity() {
+    ) : AppCompatActivity() {
 
     protected lateinit var binding: B
     protected lateinit var mViewModel: VM
     protected abstract val viewModel: VM
 
-    @get:IdRes
-    abstract val rootLayoutId: Int
+    var rootLayoutId: Int? = null
 
     protected val TAG = this.javaClass.simpleName
 
@@ -38,6 +41,16 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
         prepareDataBinding()
         start()
 
+    }
+
+    fun extendEdgeToEdge(layoutId: Int) {
+        rootLayoutId = layoutId
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(rootLayoutId!!)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
     }
 
     private fun prepareDataBinding() {
@@ -55,19 +68,26 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
     }
 
     fun handleStatusBarColor(color: Int) {
-        if (color == android.R.color.transparent) {
-            ViewCompat.setOnApplyWindowInsetsListener(findViewById(rootLayoutId)) { v, insets ->
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
-                insets
+        if (rootLayoutId != null) {
+            if (color == android.R.color.transparent) {
+                ViewCompat.setOnApplyWindowInsetsListener(findViewById(rootLayoutId!!)) { v, insets ->
+                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                    v.setPadding(
+                        systemBars.left, 0, systemBars.right, systemBars.bottom
+                    )
+                    insets
+                }
+            } else {
+                ViewCompat.setOnApplyWindowInsetsListener(findViewById(rootLayoutId!!)) { v, insets ->
+                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                    v.setPadding(
+                        systemBars.left, systemBars.top, systemBars.right, systemBars.bottom
+                    )
+                    insets
+                }
             }
-        }else {
-            ViewCompat.setOnApplyWindowInsetsListener(findViewById(rootLayoutId)) { v, insets ->
-                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-                insets
-            }
-        }
+        } else SpLog.e(TAG, "rootLayoutId is not initialized")
+
         window.statusBarColor = ContextCompat.getColor(this, color)
     }
 
@@ -93,8 +113,7 @@ abstract class BaseActivity<B : ViewDataBinding, VM : BaseViewModel>(
     }
 
     data class NavData(
-        val navButton: View,
-        val destinationFragment: Int
+        val navButton: View, val destinationFragment: Int
     )
 
     fun setNavId(navId: Int) {

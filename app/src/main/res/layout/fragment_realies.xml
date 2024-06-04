@@ -79,7 +79,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="match_parent"
-                tools:listitem="@layout/item_news_realies"
+                tools:listitem="@layout/item_news_thumb"
                 android:layout_height="wrap_content"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>

@@ -1,4 +1,6 @@
 package com.selfpro.realies.feature.main
 
-class MainViewModel {
+import com.selfpro.realies.util.base.BaseViewModel
+
+class MainViewModel: BaseViewModel() {
 }

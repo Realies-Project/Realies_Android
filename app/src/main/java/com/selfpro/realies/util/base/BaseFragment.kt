@@ -40,10 +40,7 @@ abstract class BaseFragment<B : ViewDataBinding, VM : BaseViewModel>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         prepareDataBinding()
-        (activity as BaseActivity<*, *>).handleBottomNavigationVisibility(true)
         start()
-
-
     }
 
     private fun prepareDataBinding() {

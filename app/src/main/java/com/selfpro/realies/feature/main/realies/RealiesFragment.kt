@@ -10,6 +10,6 @@ class RealiesFragment: BaseFragment<FragmentRealiesBinding, RealiesViewModel>(R.
     override val viewModel: RealiesViewModel by viewModels()
 
     override fun start() {
-        SpLog.d("Start")
+
     }
 }
