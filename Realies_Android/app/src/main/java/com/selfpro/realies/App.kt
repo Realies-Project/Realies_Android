@@ -4,4 +4,5 @@ import android.app.Application
 
 class App : Application() {
     val ad = 0
+
 }
